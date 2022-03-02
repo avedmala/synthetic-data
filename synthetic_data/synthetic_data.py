@@ -24,6 +24,8 @@ With user specified control over:
 """
 
 import numpy as np
+import pymbolic as pmbl
+from pymbolic.mapper.evaluator import EvaluationMapper as EM
 from scipy import stats
 from sklearn.preprocessing import MinMaxScaler
 
@@ -69,8 +71,9 @@ def eval_expr_for_sample(x, col_map, expr):
     for i, key_symbol in enumerate(col_map.keys()):
         my_sub[key_symbol] = x[i]
 
-    # print(my_sub)
-    out_value = expr.evalf(subs=my_sub)
+    my_sub["np"] = np
+    expr = pmbl.parse(expr)
+    out_value = EM(context=my_sub)(expr)
 
     return out_value
 
